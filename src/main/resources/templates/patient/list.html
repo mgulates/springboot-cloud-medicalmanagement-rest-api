@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients - Medical Management</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">Medical Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/home}">Home</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
+                    <a class="nav-link active" th:href="@{/patients}">Patients</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/appointments}">Appointments</a>
+                </li>
+            </ul>
+            <div class="navbar-nav">
+                    <span class="nav-item nav-link text-light">
+                        Welcome, <span sec:authentication="name"></span>
+                    </span>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Patients</h2>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/patients/add}" class="btn btn-primary">Add New Patient</a>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Telephone</th>
+                <th>Profile Image</th>
+                <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="patient : ${patients}">
+                <td th:text="${patient.id}"></td>
+                <td th:text="${patient.name}"></td>
+                <td th:text="${patient.address}"></td>
+                <td th:text="${patient.telephone}"></td>
+                <td>
+                    <img th:if="${patient.profileImage}"
+                         th:src="@{'/uploads/images/' + ${patient.profileImage}}"
+                         alt="Profile Image"
+                         class="img-thumbnail">
+                    <span th:unless="${patient.profileImage}">No image</span>
+                </td>
+                <td sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a th:href="@{/patients/edit/{id}(id=${patient.id})}" class="btn btn-sm btn-warning">Edit</a>
+                    <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this patient?')">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Medical Management</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">Medical Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/home}">Home</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/patients}">Patients</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/appointments}">Appointments</a>
+                </li>
+            </ul>
+            <div class="navbar-nav" sec:authorize="isAuthenticated()">
+                    <span class="nav-item nav-link text-light">
+                        Welcome, <span sec:authentication="name"></span>
+                    </span>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+            <div class="navbar-nav" sec:authorize="!isAuthenticated()">
+                <a class="nav-link" th:href="@{/login}">Login</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Welcome to Medical Management System</h1>
+        <p class="lead">This system helps manage patients, doctors, and appointments efficiently.</p>
+        <hr class="my-4">
+        <p>Use the navigation above to access different sections of the application.</p>
+        <div sec:authorize="!isAuthenticated()">
+            <a class="btn btn-primary btn-lg" th:href="@{/login}" role="button">Login to start</a>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
